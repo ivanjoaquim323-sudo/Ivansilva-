@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonic Master Studio 3D // IVANSILVA Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
+        
+        body { 
+            background: radial-gradient(circle at center, #0c0f1d 0%, #030407 100%); 
+            color: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: flex-end; 
+            height: 100vh; 
+            padding-bottom: 40px;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        /* Ambient Studio Glow reativo */
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 30%, var(--ambient-glow, rgba(0, 255, 183, 0.08)) 0%, transparent 60%);
+            pointer-events: none; z-index: 1;
+        }
+
+        /* LETREIRO NEON PROFISSIONAL (IVANSILVA) */
+        .neon-brand-container {
+            margin-bottom: 35px;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        #nome-neon { 
+            font-size: 3.5rem; 
+            font-weight: 900; 
+            letter-spacing: 6px;
+            text-transform: uppercase; 
+            font-family: 'Arial Black', sans-serif;
+            color: #ffffff;
+            text-shadow: 0 0 10px #00ffb7, 0 0 20px #00ffb7, 0 0 40px #0066ff;
+            transform-origin: center;
+            will-change: transform, text-shadow;
+        }
+
+        /* CENÁRIO DAS COLUNAS REAIS */
+        .stage-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 50px;
+            z-index: 2;
+            width: 100%;
+        }
+
+        /* Estrutura da Caixa Acústica que vibra por inteiro */
+        .coluna { 
+            width: 150px; 
+            height: 280px; 
+            background: linear-gradient(135deg, #151821 0%, #0a0c10 100%); 
+            border: 3px solid #1f2430; 
+            border-radius: 16px; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.85), inset 0 2px 5px rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            padding: 20px 0;
+            position: relative;
+            transform: rotateX(5deg) translate3d(0,0,0);
+            will-change: transform;
+        }
+
+        /* Tweeter (Agudos) */
+        .tweeter {
+            width: 45px;
+            height: 45px;
+            background: radial-gradient(circle, #252936 0%, #0d0f14 100%);
+            border: 2px solid #3a4155;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .tweeter-core {
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, #616981 0%, #15181f 100%);
+            border-radius: 50%;
+            border: 1px solid #00ffb7;
+            box-shadow: 0 0 8px rgba(0, 255, 183, 0.4);
+        }
+
+        /* Woofer Central com Força de Impacto Extrema */
+        .woofer {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #10121a 0%, #050608 100%);
+            border: 4px solid #1c202b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
+            transform: translate3d(0,0,0) scale(1);
+            /* Transição de mola física para simular o recuo do ar */
+            transition: transform 0.02s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform, box-shadow;
+        }
+        
+        /* Anel de LED Interno Intenso */
+        .woofer::before {
+            content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border-radius: 50%; border: 2px solid var(--glow-color, #00ffb7);
+            box-shadow: 0 0 15px var(--glow-color, #00ffb7); opacity: 0.7;
+        }
+
+        .woofer-cone {
+            width: 70px;
+            height: 70px;
+            background: repeating-radial-gradient(circle, #1a1e29, #11141b 4px, #0b0d12 8px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        }
+        .woofer-cap {
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle, #2c3244 0%, #090a0f 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.1), 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* CONSOLE DE PLAYBACK E CONTROLO */
+        .studio-dashboard { 
+            z-index: 10; 
+            width: 92%; 
+            max-width: 650px; 
+            background: linear-gradient(180deg, rgba(20, 24, 33, 0.65) 0%, rgba(10, 12, 17, 0.85) 100%);
+            backdrop-filter: blur(30px); 
+            -webkit-backdrop-filter: blur(30px); 
+            border: 1px solid rgba(255, 255, 255, 0.06); 
+            border-radius: 24px; 
+            padding: 24px; 
+            box-shadow: 0 40px 80px rgba(0,0,0,0.9); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 18px; 
+        }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px; }
+        .studio-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #69778c; font-weight: 700; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        /* Botão de carregar pastas */
+        .folder-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #a0aec0; padding: 8px 16px; font-size: 10px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; position: relative; letter-spacing: 1px; }
+        .folder-btn:hover { color: #00ffb7; border-color: #00ffb7; background: rgba(0, 255, 183, 0.05); box-shadow: 0 0 15px rgba(0, 255, 183, 0.15); }
+        .folder-btn input { position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+
+        /* LINHA DE CONTROLO DE MÚSICA */
+        .timeline-container { display: flex; align-items: center; gap: 14px; width: 100%; background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.02); }
+        .time-display { font-family: 'Courier New', Courier, monospace; font-size: 12px; color: #8796a8; font-weight: bold; min-width: 40px; letter-spacing: 0.5px; }
+        
+        .timeline-slider { -webkit-appearance: none; flex-grow: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; outline: none; cursor: pointer; }
+        .timeline-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ffffff; box-shadow: 0 0 5px rgba(0,0,0,0.5); transition: 0.1s; }
+        .timeline-slider:hover::-webkit-slider-thumb { background: #00ffb7; box-shadow: 0 0 10px #00ffb7; transform: scale(1.2); }
+
+        /* CONTROLOS DE INTERFACE */
+        .dock-controls { display: flex; align-items: center; justify-content: center; gap: 28px; }
+        .icon-btn { background: none; border: none; color: #4e5d78; font-size: 16px; cursor: pointer; transition: 0.2s; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .icon-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
+        
+        .icon-btn.play-pause { background: #ffffff; color: #0a0c10; font-size: 13px; box-shadow: 0 4px 15px rgba(255,255,255,0.2); }
+        .icon-btn.play-pause:hover { background: #00ffb7; box-shadow: 0 0 25px rgba(0, 255, 183, 0.6); transform: scale(1.05); }
+        .icon-btn.active { color: #00ffb7; text-shadow: 0 0 10px #00ffb7; }
+    </style>
+</head>
+<body>
+
+    <!-- Letreiro Neon Reativo -->
+    <div class="neon-brand-container">
+        <div id="nome-neon">IVANSILVA</div>
+    </div>
+
+    <!-- Par de Monitores de Áudio -->
+    <div class="stage-container">
+        <div class="coluna" id="speaker-left">
+            <div class="tweeter"><div class="tweeter-core"></div></div>
+            <div class="woofer" id="woofer-l">
+                <div class="woofer-cone"><div class="woofer-cap"></div></div>
+            </div>
+        </div>
+        <div class="coluna" id="speaker-right">
+            <div class="tweeter"><div class="tweeter-core"></div></div>
+            <div class="woofer" id="woofer-r">
+                <div class="woofer-cone"><div class="woofer-cap"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel Principal do Estúdio -->
+    <div class="studio-dashboard">
+        <div class="top-bar">
+            <span class="studio-label" id="dsp-status">PRO DIGITAL AUDIO // ULTRA ACTIVE</span>
+            <button class="folder-btn">
+                CARREGAR PASTA
+                <input type="file" id="folder-input" webkitdirectory directory multiple>
+            </button>
+        </div>
+
+        <!-- Linha de Controlo de Minutos e Progresso -->
+        <div class="timeline-container">
+            <span class="time-display" id="time-current">0:00</span>
+            <input type="range" class="timeline-slider" id="track-slider" min="0" max="100" value="0">
+            <span class="time-display" id="time-duration">0:00</span>
+        </div>
+
+        <!-- Controlos de Faixas -->
+        <div class="dock-controls">
+            <button class="icon-btn" id="btn-loop">🔁</button>
+            <button class="icon-btn" id="btn-prev">⏮</button>
+            <button class="icon-btn play-pause" id="btn-play">▶</button>
+            <button class="icon-btn" id="btn-next">⏭</button>
+        </div>
+    </div>
+
+    <script>
+        // --- PRO ULTRA AUDIO ENGINE ---
+        let audioCtx, source, analyser, dataArray;
+        const audio = new Audio();
+        let isPlaying = false, isLooping = false;
+        let playlist = [];
+        let currentIdx = 0;
+        let userInteracted = false;
+        let smoothBass = 0; 
+
+        const neonText = document.getElementById('nome-neon');
+        const speakerL = document.getElementById('speaker-left');
+        const speakerR = document.getElementById('speaker-right');
+        const wooferL = document.getElementById('woofer-l');
+        const wooferR = document.getElementById('woofer-r');
+        const btnPlay = document.getElementById('btn-play');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const btnLoop = document.getElementById('btn-loop');
+        const trackSlider = document.getElementById('track-slider');
+        const timeCurrent = document.getElementById('time-current');
+        const timeDuration = document.getElementById('time-duration');
+        const folderInput = document.getElementById('folder-input');
+        const dspStatus = document.getElementById('dsp-status');
+
+        function initAudio() {
+            if (audioCtx) return;
+            
+            // CONFIGURAÇÃO ULTRA-HD: Modo interativo sem compressão de áudio do browser
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 'interactive' });
+            analyser = audioCtx.createAnalyser();
+            
+            // Alta fidelidade de amostragem mantendo o foco milimétrico nos sub-graves
+            analyser.fftSize = 256; 
+            analyser.smoothingTimeConstant = 0.4; // Torna o analisador muito mais imediato e seco
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            
+            source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+        }
+
+        function formatTime(secs) {
+            if (isNaN(secs)) return "0:00";
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // Carregar pastas completas
+        folderInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files).filter(file => file.type.startsWith('audio/'));
+            if (files.length > 0) {
+                playlist = files;
+                loadTrack(0);
+            }
+        });
+
+        function loadTrack(idx) {
+            if (playlist.length === 0) return;
+            currentIdx = idx;
+            initAudio();
+            audio.src = URL.createObjectURL(playlist[idx]);
+            dspStatus.innerText = `TRACK [${currentIdx + 1}/${playlist.length}]: ${playlist[idx].name}`;
+            if (isPlaying) audio.play(); else playEngine();
+        }
+
+        function playEngine() {
+            if (playlist.length === 0) {
+                dspStatus.innerText = "SISTEMA PRONTO // CARREGUE UMA PASTA";
+                return;
+            }
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            audio.play();
+            isPlaying = true;
+            btnPlay.innerText = "⏸";
+        }
+
+        function pauseEngine() {
+            audio.pause();
+            isPlaying = false;
+            btnPlay.innerText = "▶";
+            resetVisuals();
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            if (!userInteracted && audio.duration) {
+                trackSlider.value = (audio.currentTime / audio.duration) * 100;
+                timeCurrent.innerText = formatTime(audio.currentTime);
+            }
+        });
+        audio.addEventListener('loadedmetadata', () => {
+            timeDuration.innerText = formatTime(audio.duration);
+        });
+        trackSlider.addEventListener('input', () => userInteracted = true);
+        trackSlider.addEventListener('change', () => {
+            if (audio.duration) audio.currentTime = (trackSlider.value / 100) * audio.duration;
+            userInteracted = false;
+        });
+
+        btnPlay.addEventListener('click', () => isPlaying ? pauseEngine() : playEngine());
+        btnLoop.addEventListener('click', () => { isLooping = !isLooping; audio.loop = isLooping; btnLoop.classList.toggle('active', isLooping); });
+        btnNext.addEventListener('click', () => { if(currentIdx < playlist.length - 1) loadTrack(currentIdx + 1); });
+        btnPrev.addEventListener('click', () => { if(currentIdx > 0) loadTrack(currentIdx - 1); });
+        audio.addEventListener('ended', () => { if(!isLooping && currentIdx < playlist.length - 1) btnNext.click(); });
+
+        // --- ENGINE DE FLUXO DE BATIDA EXTRA PESADA (VIBRAÇÃO NO MEIO) ---
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            if (isPlaying && analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                
+                // Analisa as primeiras 6 bandas de graves profundos (Sub-bass total)
+                let instantBass = 0;
+                for(let i = 0; i < 6; i++) {
+                    instantBass += dataArray[i];
+                }
+                instantBass = (instantBass / 6) / 255;
+                
+                // Coeficiente de reação rápido para impacto físico seco (sem trepidação de agudos)
+                smoothBass += (instantBass - smoothBass) * 0.42;
+
+                // 1. FORÇA BRUTA NO MEIO: O woofer central expande até 1.45x com sombra 3D pulsante de alta pressão
+                const wooferScale = 1 + (smoothBass * 0.45);
+                const dynamicGlow = smoothBass * 45;
+                
+                wooferL.style.transform = `translate3d(0,0,0) scale(${wooferScale})`;
+                wooferR.style.transform = `translate3d(0,0,0) scale(${wooferScale})`;
+                
+                // Inserção da projeção de sombra tridimensional sincronizada à batida
+                wooferL.style.boxShadow = `inset 0 10px 20px rgba(0,0,0,0.8), 0 0 ${dynamicGlow}px var(--glow-color, rgba(0, 255, 183, 0.6))`;
+                wooferR.style.boxShadow = `inset 0 10px 20px rgba(0,0,0,0.8), 0 0 ${dynamicGlow}px var(--glow-color, rgba(0, 255, 183, 0.6))`;
+                
+                // 2. VIBRAÇÃO DA CAIXA ACÚSTICA: A estrutura externa acompanha o impacto
+                const speakerBoxScale = 1 + (smoothBass * 0.05);
+                speakerL.style.transform = `rotateX(5deg) scale(${speakerBoxScale})`;
+                speakerR.style.transform = `rotateX(5deg) scale(${speakerBoxScale})`;
+
+                // 3. PULSAÇÃO DO LETREIRO
+                const textScale = 1 + (smoothBass * 0.09);
+                neonText.style.transform = `translate3d(0,0,0) scale(${textScale})`;
+
+                // 4. DINÂMICA CROMÁTICA ULTRA-HD
+                const hue = (Date.now() * 0.02 + smoothBass * 30) % 360;
+                const activeColor = `hsl(${hue}, 100%, 60%)`;
+                const secondColor = `hsl(${(hue + 90) % 360}, 100%, 50%)`;
+                
+                neonText.style.textShadow = `0 0 20px ${activeColor}, 0 0 40px ${secondColor}, 0 0 60px ${activeColor}`;
+                wooferL.style.setProperty('--glow-color', activeColor);
+                wooferR.style.setProperty('--glow-color', activeColor);
+                
+                document.body.style.setProperty('--ambient-glow', `rgba(${Math.sin(hue)*120+135}, 255, 183, ${0.05 + smoothBass * 0.18})`);
+            }
+        }
+        renderLoop();
+
+        function resetVisuals() {
+            wooferL.style.transform = "translate3d(0,0,0) scale(1)";
+            wooferR.style.transform = "translate3d(0,0,0) scale(1)";
+            wooferL.style.boxShadow = "inset 0 10px 20px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.3)";
+            wooferR.style.boxShadow = "inset 0 10px 20px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.3)";
+            speakerL.style.transform = "rotateX(5deg) scale(1)";
+            speakerR.style.transform = "rotateX(5deg) scale(1)";
+            neonText.style.transform = "translate3d(0,0,0) scale(1)";
+            neonText.style.textShadow = "0 0 10px #00ffb7, 0 0 20px #0066ff";
+            document.body.style.setProperty('--ambient-glow', 'rgba(0, 255, 183, 0.08)');
+        }
+    </script>
+</body>
+</html>
